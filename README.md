@@ -52,7 +52,7 @@ I create free, open-source projects for the community. While not required, donat
   - **Bank Capacity** - Expand maximum bank balance
   - **XP Boost** - Percentage bonus for guild members
   - **Bank Interest** - Passive income on bank balance
-- **Economy Integration** - Works with K4-Economy or any compatible economy plugin
+- **Economy Integration** - Works with Economy or any compatible economy plugin
 
 ### Extensible Perk System
 
@@ -106,19 +106,19 @@ The plugin uses multiple configuration files for better organization:
 
 ### `guild.json` - Core Settings
 
-| Option                           | Description                                     | Default     |
-| -------------------------------- | ----------------------------------------------- | ----------- |
-| `DatabaseConnection`             | Database connection name (from database.jsonc)  | `"host"`    |
-| `WalletKind`                     | Economy wallet type to use                      | `"credits"` |
-| `DefaultSlots`                   | Starting member slots for new guilds            | `5`         |
-| `MaxSlots`                       | Maximum slots a guild can have (with upgrades)  | `20`        |
-| `CreationCost`                   | Cost to create a guild                          | `5000`      |
-| `MinNameLength`                  | Minimum guild name length                       | `3`         |
-| `MaxNameLength`                  | Maximum guild name length                       | `32`        |
-| `MaxTagLength`                   | Maximum tag length                              | `4`         |
-| `ShowTagOnScoreboard`            | Show guild tag as clan tag on scoreboard        | `true`      |
-| `ScoreboardRefreshIntervalSeconds` | Interval to refresh scoreboard tags (0=disabled) | `60`      |
-| `GuildRanks`                     | Array of rank definitions                       | _(see below)_ |
+| Option                             | Description                                      | Default       |
+| ---------------------------------- | ------------------------------------------------ | ------------- |
+| `DatabaseConnection`               | Database connection name (from database.jsonc)   | `"host"`      |
+| `WalletKind`                       | Economy wallet type to use                       | `"credits"`   |
+| `DefaultSlots`                     | Starting member slots for new guilds             | `5`           |
+| `MaxSlots`                         | Maximum slots a guild can have (with upgrades)   | `20`          |
+| `CreationCost`                     | Cost to create a guild                           | `5000`        |
+| `MinNameLength`                    | Minimum guild name length                        | `3`           |
+| `MaxNameLength`                    | Maximum guild name length                        | `32`          |
+| `MaxTagLength`                     | Maximum tag length                               | `4`           |
+| `ShowTagOnScoreboard`              | Show guild tag as clan tag on scoreboard         | `true`        |
+| `ScoreboardRefreshIntervalSeconds` | Interval to refresh scoreboard tags (0=disabled) | `60`          |
+| `GuildRanks`                       | Array of rank definitions                        | _(see below)_ |
 
 ### Rank Configuration
 
@@ -146,23 +146,23 @@ Each rank has:
 
 Each upgrade type (`SlotUpgrade`, `BankCapacity`, `XPBoost`, `BankInterest`) has:
 
-| Option           | Description                          |
-| ---------------- | ------------------------------------ |
-| `Enabled`        | Enable/disable this upgrade          |
-| `MaxLevel`       | Maximum upgrade level                |
-| `BaseCost`       | Cost for first level                 |
-| `CostMultiplier` | Cost scaling per level               |
+| Option           | Description                 |
+| ---------------- | --------------------------- |
+| `Enabled`        | Enable/disable this upgrade |
+| `MaxLevel`       | Maximum upgrade level       |
+| `BaseCost`       | Cost for first level        |
+| `CostMultiplier` | Cost scaling per level      |
 
 **Type-specific settings:**
 
-| Upgrade Type   | Extra Setting        | Default | Description                          |
-| -------------- | -------------------- | ------- | ------------------------------------ |
-| `SlotUpgrade`  | `SlotsPerLevel`      | `2`     | Member slots added per level         |
-| `BankCapacity` | `BaseCapacity`       | `10000` | Starting bank capacity               |
-| `BankCapacity` | `CapacityPerLevel`   | `5000`  | Additional capacity per level        |
-| `XPBoost`      | `BoostPerLevel`      | `5`     | XP boost percentage per level        |
-| `BankInterest` | `InterestPerLevel`   | `1.0`   | Interest percentage per level        |
-| `BankInterest` | `IntervalMinutes`    | `60`    | How often interest is applied        |
+| Upgrade Type   | Extra Setting      | Default | Description                   |
+| -------------- | ------------------ | ------- | ----------------------------- |
+| `SlotUpgrade`  | `SlotsPerLevel`    | `2`     | Member slots added per level  |
+| `BankCapacity` | `BaseCapacity`     | `10000` | Starting bank capacity        |
+| `BankCapacity` | `CapacityPerLevel` | `5000`  | Additional capacity per level |
+| `XPBoost`      | `BoostPerLevel`    | `5`     | XP boost percentage per level |
+| `BankInterest` | `InterestPerLevel` | `1.0`   | Interest percentage per level |
+| `BankInterest` | `IntervalMinutes`  | `60`    | How often interest is applied |
 
 ### `commands.json` - Command Customization
 
@@ -260,12 +260,14 @@ Create custom perks by implementing `IGuildPerk` in a separate plugin. See `src-
 - `src-perks/K4-Guilds-Health/` - Health boost perk plugin
 
 Each perk is a standalone plugin that:
+
 1. References `K4-GuildsApi.dll` from `src-plugin/resources/exports/`
 2. Gets the API via `UseSharedInterface`
 3. Registers its perk with `_guildsApi.RegisterPerk()`
 4. Hooks game events and uses the API to check perk status
 
 **Available perk event hooks:**
+
 - `OnMemberSpawn(IPerkContext ctx)` - Called when guild member spawns
 - `OnMemberDeath(IPerkContext ctx)` - Called when guild member dies
 - `OnMemberKill(IPerkContext ctx, IPlayer victim)` - Called when guild member gets a kill
