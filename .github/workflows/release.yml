@@ -133,12 +133,12 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           CHANGELOG=""
 
-          # Extract changelog section if file exists
+          # Extract changelog section if file exists (matches both [v1.0.1] and [1.0.1])
           if [ -f "CHANGELOG.md" ]; then
             CHANGELOG=$(awk -v ver="$VERSION" '
               /^## \[/ {
                 if (found) exit
-                if ($0 ~ "\\[" ver "\\]") { found=1; next }
+                if ($0 ~ "\\[v?" ver "\\]") { found=1; next }
               }
               found { print }
             ' CHANGELOG.md)
@@ -165,7 +165,7 @@ jobs:
             echo "$CHANGELOG"
             echo ""
             if [ -n "$PREV_TAG" ]; then
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...HEAD"
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${VERSION}"
             fi
             echo "EOF"
           } >> $GITHUB_OUTPUT
