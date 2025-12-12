@@ -127,10 +127,36 @@ jobs:
 
           echo "all_zips=$(ls release-artifacts/*.zip | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
+      - name: Determine release tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          REPO_NAME="${{ github.event.repository.name }}"
+
+          # Find next available tag/build number
+          BASE_TAG="v${VERSION}"
+          TAG="$BASE_TAG"
+          TITLE="${REPO_NAME} | ${BASE_TAG}"
+          BUILD_NUM=1
+
+          while gh release view "$TAG" &>/dev/null; do
+            BUILD_NUM=$((BUILD_NUM + 1))
+            TAG="${BASE_TAG}-${BUILD_NUM}"
+            TITLE="${REPO_NAME} | ${BASE_TAG}#${BUILD_NUM}"
+            echo "Tag $BASE_TAG exists, trying: $TAG"
+          done
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "Determined tag: $TAG (Title: $TITLE)"
+
       - name: Extract changelog
         id: changelog
         run: |
           VERSION="${{ steps.version.outputs.version }}"
+          NEW_TAG="${{ steps.tag.outputs.tag }}"
           CHANGELOG=""
 
           # Extract changelog section if file exists (matches both [v1.0.1] and [1.0.1])
@@ -148,16 +174,8 @@ jobs:
             CHANGELOG="Release v$VERSION"
           fi
 
-          # Get previous DIFFERENT version tag (skip v1.0.1, v1.0.1-2, etc. if current is 1.0.1)
-          PREV_TAG=""
-          for tag in $(git tag --sort=-v:refname 2>/dev/null); do
-            # Extract base version from tag (v1.0.1-2 -> 1.0.1, v1.0.1 -> 1.0.1)
-            TAG_VERSION=$(echo "$tag" | sed 's/^v//' | sed 's/-[0-9]*$//')
-            if [ "$TAG_VERSION" != "$VERSION" ]; then
-              PREV_TAG="$tag"
-              break
-            fi
-          done
+          # Get the most recent existing tag
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
           # Build release body
           {
@@ -165,7 +183,7 @@ jobs:
             echo "$CHANGELOG"
             echo ""
             if [ -n "$PREV_TAG" ]; then
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...v${VERSION}"
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${NEW_TAG}"
             fi
             echo "EOF"
           } >> $GITHUB_OUTPUT
@@ -175,7 +193,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          REPO_NAME="${{ github.event.repository.name }}"
+          TAG="${{ steps.tag.outputs.tag }}"
+          TITLE="${{ steps.tag.outputs.title }}"
 
           # Auto-detect pre-release (contains -)
           PRERELEASE_FLAG=""
@@ -183,19 +202,6 @@ jobs:
             PRERELEASE_FLAG="--prerelease"
             echo "Detected pre-release version"
           fi
-
-          # Find next available tag/build number
-          BASE_TAG="v${VERSION}"
-          TAG="$BASE_TAG"
-          TITLE="${REPO_NAME} | ${BASE_TAG}"
-          BUILD_NUM=1
-
-          while gh release view "$TAG" &>/dev/null; do
-            BUILD_NUM=$((BUILD_NUM + 1))
-            TAG="${BASE_TAG}-${BUILD_NUM}"
-            TITLE="${REPO_NAME} | ${BASE_TAG}#${BUILD_NUM}"
-            echo "Tag $BASE_TAG exists, trying: $TAG"
-          done
 
           echo "Creating release: $TAG (Title: $TITLE)"
 
