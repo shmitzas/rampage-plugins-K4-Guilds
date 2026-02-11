@@ -157,36 +157,41 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           NEW_TAG="${{ steps.tag.outputs.tag }}"
-          CHANGELOG=""
 
           # Extract changelog section if file exists (matches both [v1.0.1] and [1.0.1])
           if [ -f "CHANGELOG.md" ]; then
-            CHANGELOG=$(awk -v ver="$VERSION" '
+            # Write changelog directly to temp file to avoid shell interpretation
+            awk -v ver="$VERSION" '
               /^## \[/ {
                 if (found) exit
                 if ($0 ~ "\\[v?" ver "\\]") { found=1; next }
               }
               found { print }
-            ' CHANGELOG.md)
-          fi
+            ' CHANGELOG.md > /tmp/release_notes.txt
 
-          if [ -z "$CHANGELOG" ]; then
-            CHANGELOG="Release v$VERSION"
+            CHANGELOG_EXISTS=true
+          else
+            CHANGELOG_EXISTS=false
           fi
 
           # Get the most recent existing tag
           PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
 
-          # Build release body
-          {
-            echo "body<<EOF"
-            echo "$CHANGELOG"
-            echo ""
+          # Build complete release notes file
+          if [ "$CHANGELOG_EXISTS" = true ] && [ -s /tmp/release_notes.txt ]; then
+            # Append full changelog link if previous tag exists
             if [ -n "$PREV_TAG" ]; then
-              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${NEW_TAG}"
+              echo "" >> /tmp/release_notes.txt
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${NEW_TAG}" >> /tmp/release_notes.txt
             fi
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          else
+            # No changelog found, create simple release notes
+            echo "Release v$VERSION" > /tmp/release_notes.txt
+            if [ -n "$PREV_TAG" ]; then
+              echo "" >> /tmp/release_notes.txt
+              echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG}...${NEW_TAG}" >> /tmp/release_notes.txt
+            fi
+          fi
 
       - name: Create GitHub Release
         env:
@@ -207,7 +212,7 @@ jobs:
 
           gh release create "$TAG" \
             --title "$TITLE" \
-            --notes "${{ steps.changelog.outputs.body }}" \
+            --notes-file /tmp/release_notes.txt \
             $PRERELEASE_FLAG \
             release-artifacts/*.zip
 
