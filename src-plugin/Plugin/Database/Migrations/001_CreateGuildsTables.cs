@@ -71,7 +71,7 @@ public class CreateGuildsTables : Migration
 
     public override void Down()
     {
-        if (Schema.Table("k4_guilds").Exists())
+        if (Schema.Table("k4_guild_perks").Exists())
             Delete.Table("k4_guild_perks");
 
         if (Schema.Table("k4_guild_upgrades").Exists())
