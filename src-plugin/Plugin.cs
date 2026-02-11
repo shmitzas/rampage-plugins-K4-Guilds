@@ -21,7 +21,7 @@ namespace K4_Guilds;
 
 [PluginMetadata(
 	Id = "k4.guilds",
-	Version = "1.0.1",
+	Version = "1.0.2",
 	Name = "K4 - Guilds",
 	Author = "K4ryuu",
 	Description = "Guild system with ranks, upgrades, and developer API"
@@ -117,7 +117,7 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 		ServiceCollection services = new();
 		services.AddSwiftly(Core)
 			.AddOptions<T>()
-			.BindConfiguration(fileName);
+			.BindConfiguration(sectionName);
 
 		var provider = services.BuildServiceProvider();
 		return provider.GetRequiredService<IOptionsMonitor<T>>();
