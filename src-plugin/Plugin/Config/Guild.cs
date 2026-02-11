@@ -11,7 +11,7 @@ public sealed class GuildConfig
 	/* ==================== Database & Economy ==================== */
 
 	/// <summary>DB connection name (from SwiftlyS2's database.jsonc)</summary>
-	public string DatabaseConnection { get; set; } = "host";
+	public string DatabaseConnection { get; set; } = "default";
 
 	/// <summary>Wallet kind to use for guild transactions</summary>
 	public string WalletKind { get; set; } = "credits";
