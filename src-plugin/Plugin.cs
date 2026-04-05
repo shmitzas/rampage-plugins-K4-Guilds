@@ -21,7 +21,7 @@ namespace K4_Guilds;
 
 [PluginMetadata(
 	Id = "k4.guilds",
-	Version = "1.0.2",
+	Version = "1.0.3",
 	Name = "K4 - Guilds",
 	Author = "K4ryuu",
 	Description = "Guild system with ranks, upgrades, and developer API"

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using K4_Guilds.Database.Models;
 using SwiftlyS2.Shared.Players;
@@ -7,7 +8,7 @@ namespace K4_Guilds.Services;
 public partial class GuildService
 {
 	private static readonly Regex ValidNamePattern = new(@"^[\p{L}\p{N}\s\-_\.]+$", RegexOptions.Compiled);
-	private static readonly Regex ValidTagPattern = new(@"^[\p{L}\p{N}\-_]+$", RegexOptions.Compiled);
+	private static readonly Regex ValidTagPattern = new(@"^[\p{L}\p{N}\p{S}\p{M}\-_]+$", RegexOptions.Compiled);
 
 	private (bool Valid, LocalizedMessage Error) ValidateGuildName(string name)
 	{
@@ -37,7 +38,7 @@ public partial class GuildService
 		if (!ValidTagPattern.IsMatch(tag))
 			return (false, LocalizedMessage.Simple("k4.guild.error.tag_invalid_chars"));
 
-		if (tag.Length > plugin.Guild.MaxTagLength)
+		if (new StringInfo(tag).LengthInTextElements > plugin.Guild.MaxTagLength)
 			return (false, LocalizedMessage.WithArgs("k4.guild.error.tag_too_long", plugin.Guild.MaxTagLength));
 
 		return (true, default);

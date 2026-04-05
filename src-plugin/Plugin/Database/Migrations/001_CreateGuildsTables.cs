@@ -13,7 +13,7 @@ public class CreateGuildsTables : Migration
             Create.Table("k4_guilds")
                 .WithColumn("id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("name").AsString(128).NotNullable().Unique()
-                .WithColumn("tag").AsString(16).NotNullable()
+                .WithColumn("tag").AsString(32).NotNullable()
                 .WithColumn("leader_steam_id").AsInt64().NotNullable()
                 .WithColumn("bank_balance").AsInt64().NotNullable().WithDefaultValue(0)
                 .WithColumn("created_at").AsDateTime().NotNullable()
