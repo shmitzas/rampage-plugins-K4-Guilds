@@ -1,3 +1,4 @@
+using Dapper;
 using Dommel;
 using K4_Guilds.Database.Models;
 
@@ -33,9 +34,8 @@ public partial class DatabaseService
 			JoinedAt = DateTime.UtcNow,
 			LastSeen = DateTime.UtcNow
 		};
-		await conn.InsertAsync(member);
-
-		return (await GetGuildMemberAsync(steamId))!;
+		member.Id = Convert.ToInt32(await conn.InsertAsync(member));
+		return member;
 	}
 
 	public async Task<bool> RemoveMemberAsync(ulong steamId)
@@ -43,10 +43,10 @@ public partial class DatabaseService
 		using var conn = GetConnection();
 		conn.Open();
 
-		var member = (await conn.SelectAsync<GuildMember>(m => m.SteamId == steamId)).FirstOrDefault();
-		if (member == null) return false;
-
-		return await conn.DeleteAsync(member);
+		var affected = await conn.ExecuteAsync(
+			"DELETE FROM k4_guild_members WHERE steam_id = @SteamId",
+			new { SteamId = (long)steamId });
+		return affected > 0;
 	}
 
 	public async Task<bool> UpdateMemberRankAsync(ulong steamId, int rankPriority)
@@ -54,10 +54,9 @@ public partial class DatabaseService
 		using var conn = GetConnection();
 		conn.Open();
 
-		var member = (await conn.SelectAsync<GuildMember>(m => m.SteamId == steamId)).FirstOrDefault();
-		if (member == null) return false;
-
-		member.RankPriority = rankPriority;
-		return await conn.UpdateAsync(member);
+		var affected = await conn.ExecuteAsync(
+			"UPDATE k4_guild_members SET rank_priority = @Rank WHERE steam_id = @SteamId",
+			new { Rank = rankPriority, SteamId = (long)steamId });
+		return affected > 0;
 	}
 }

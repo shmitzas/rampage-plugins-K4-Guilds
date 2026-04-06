@@ -21,6 +21,7 @@ public static class HelpHandler
 			ctx.Localizer["k4.command.help.upgrade"],
 			ctx.Localizer["k4.command.help.chat"],
 			ctx.Localizer["k4.command.help.perks"],
+			ctx.Localizer["k4.command.help.top"],
 			ctx.Localizer["k4.command.help.footer"]
 		);
 		return null;

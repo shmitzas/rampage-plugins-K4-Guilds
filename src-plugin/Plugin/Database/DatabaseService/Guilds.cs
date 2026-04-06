@@ -1,4 +1,5 @@
 using System.Data;
+using Dapper;
 using Dommel;
 using K4_Guilds.Database.Models;
 
@@ -13,7 +14,7 @@ public partial class DatabaseService
 
 		var guild = await conn.GetAsync<Guild>(guildId);
 		if (guild != null)
-			await LoadGuildRelationsAsync(conn, guild);
+			await LoadGuildRelationsAsync(guild);
 
 		return guild;
 	}
@@ -25,7 +26,7 @@ public partial class DatabaseService
 
 		var guild = (await conn.SelectAsync<Guild>(g => g.Name == name)).FirstOrDefault();
 		if (guild != null)
-			await LoadGuildRelationsAsync(conn, guild);
+			await LoadGuildRelationsAsync(guild);
 
 		return guild;
 	}
@@ -40,7 +41,7 @@ public partial class DatabaseService
 
 		var guild = await conn.GetAsync<Guild>(member.GuildId);
 		if (guild != null)
-			await LoadGuildRelationsAsync(conn, guild);
+			await LoadGuildRelationsAsync(guild);
 
 		return guild;
 	}
@@ -105,16 +106,14 @@ public partial class DatabaseService
 		using var conn = GetConnection();
 		conn.Open();
 
-		var allGuilds = (await conn.SelectAsync<Guild>(g => true))
-			.OrderByDescending(g => g.CreatedAt)
-			.Skip(page * pageSize)
-			.Take(pageSize)
-			.ToList();
+		var guilds = (await conn.QueryAsync<Guild>(
+			"SELECT id AS Id, name AS Name, tag AS Tag, leader_steam_id AS LeaderSteamId, bank_balance AS BankBalance, created_at AS CreatedAt, updated_at AS UpdatedAt FROM k4_guilds ORDER BY created_at DESC LIMIT @PageSize OFFSET @Offset",
+			new { PageSize = pageSize, Offset = page * pageSize })).ToList();
 
-		if (allGuilds.Count == 0) return allGuilds;
+		if (guilds.Count == 0) return guilds;
 
-		await LoadGuildsRelationsBatchAsync(conn, allGuilds);
-		return allGuilds;
+		await LoadGuildsRelationsBatchAsync(conn, guilds);
+		return guilds;
 	}
 
 	public async Task UpdateGuildNameAsync(int guildId, string newName)
@@ -131,11 +130,22 @@ public partial class DatabaseService
 		}
 	}
 
-	private static async Task LoadGuildRelationsAsync(IDbConnection conn, Guild guild)
+	private async Task LoadGuildRelationsAsync(Guild guild)
 	{
-		guild.Members = [.. await conn.SelectAsync<GuildMember>(m => m.GuildId == guild.Id)];
-		guild.Upgrades = [.. await conn.SelectAsync<GuildUpgrade>(u => u.GuildId == guild.Id)];
-		guild.EnabledPerks = [.. await conn.SelectAsync<GuildPerk>(p => p.GuildId == guild.Id)];
+		// Open three separate connections so all three queries run in parallel
+		using var conn1 = GetConnection(); conn1.Open();
+		using var conn2 = GetConnection(); conn2.Open();
+		using var conn3 = GetConnection(); conn3.Open();
+
+		var membersTask  = conn1.SelectAsync<GuildMember>(m => m.GuildId == guild.Id);
+		var upgradesTask = conn2.SelectAsync<GuildUpgrade>(u => u.GuildId == guild.Id);
+		var perksTask    = conn3.SelectAsync<GuildPerk>(p => p.GuildId == guild.Id);
+
+		await Task.WhenAll(membersTask, upgradesTask, perksTask);
+
+		guild.Members      = [.. membersTask.Result];
+		guild.Upgrades     = [.. upgradesTask.Result];
+		guild.EnabledPerks = [.. perksTask.Result];
 	}
 
 	private static async Task LoadGuildsRelationsBatchAsync(IDbConnection conn, List<Guild> guilds)

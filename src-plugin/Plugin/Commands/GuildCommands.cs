@@ -132,7 +132,7 @@ public sealed class GuildCommands(Plugin plugin, GuildService guildService, Upgr
     {
         var c = plugin.Commands;
         // Commands that don't require being in a guild
-        return cmd != c.Create && cmd != c.Accept && cmd != c.Decline && cmd != c.Help;
+        return cmd != c.Create && cmd != c.Accept && cmd != c.Decline && cmd != c.Help && cmd != c.Top;
     }
 
     private async Task<string?> DispatchAsync(SubCommandSettings cmd, CommandContext ctx)
@@ -157,6 +157,7 @@ public sealed class GuildCommands(Plugin plugin, GuildService guildService, Upgr
             _ when cmd == c.Chat => await ChatHandler.ExecuteAsync(ctx),
             _ when cmd == c.Perks => await PerksHandler.ExecuteAsync(ctx),
             _ when cmd == c.Rename => await RenameHandler.ExecuteAsync(ctx, c.Rename),
+            _ when cmd == c.Top => await TopHandler.ExecuteAsync(ctx),
             _ => HelpHandler.Execute(ctx)
         };
     }

@@ -126,7 +126,9 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 	private void InitializeDatabase()
 	{
 		_database = new DatabaseService(Guild.DatabaseConnection);
-		Task.Run(async () => await _database.InitializeAsync());
+		_ = _database.InitializeAsync().ContinueWith(
+			t => Core.Logger.LogError(t.Exception, "Failed to initialize K4-Guilds database."),
+			TaskContinuationOptions.OnlyOnFaulted);
 	}
 
 	private void InitializeServices()
@@ -142,6 +144,7 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 	private void RegisterEvents()
 	{
 		Core.GameEvent.HookPost<EventPlayerActivate>(OnPlayerActivate);
+		Core.GameEvent.HookPost<EventPlayerDeath>(OnPlayerDeath);
 		Core.Event.OnClientDisconnected += OnClientDisconnected;
 	}
 
@@ -152,9 +155,72 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 		if (player == null || !player.IsValid || player.IsFakeClient)
 			return HookResult.Continue;
 
-		Task.Run(async () => await UpdatePlayerScoreboardTag(player));
+		_ = UpdatePlayerScoreboardTag(player);
 
 		return HookResult.Continue;
+	}
+
+	private HookResult OnPlayerDeath(EventPlayerDeath ev)
+	{
+		// Capture event data synchronously before going async (event object may be recycled after handler returns)
+		var victim = ev.UserIdPlayer;
+		var attacker = ev.AttackerPlayer;
+		var assister = ev.AssisterPlayer;
+		var isHeadshot = ev.Headshot;
+		bool isSuicide = victim != null && attacker != null && attacker.SteamID == victim.SteamID;
+
+		_ = HandlePlayerDeathStatsAsync(victim, attacker, assister, isHeadshot, isSuicide);
+
+		return HookResult.Continue;
+	}
+
+	private async Task HandlePlayerDeathStatsAsync(IPlayer? victim, IPlayer? attacker, IPlayer? assister, bool isHeadshot, bool isSuicide)
+	{
+		// Resolve all three guilds in parallel — independent lookups, no reason to serialize them
+		var victimTask = victim is { IsFakeClient: false }
+			? _guildService.GetPlayerGuildAsync(victim.SteamID)
+			: Task.FromResult<Guild?>(null);
+
+		var attackerTask = attacker is { IsFakeClient: false } && !isSuicide
+			? _guildService.GetPlayerGuildAsync(attacker.SteamID)
+			: Task.FromResult<Guild?>(null);
+
+		var assisterTask = assister is { IsFakeClient: false }
+			? _guildService.GetPlayerGuildAsync(assister.SteamID)
+			: Task.FromResult<Guild?>(null);
+
+		await Task.WhenAll(victimTask, attackerTask, assisterTask);
+
+		var victimGuild = victimTask.Result;
+		var attackerGuild = attackerTask.Result;
+		var assisterGuild = assisterTask.Result;
+
+		// Accumulate per-guild stat deltas — coalesces into one DB call when multiple roles share a guild
+		var deltas = new Dictionary<int, (int kills, int deaths, int headshots, int assists)>();
+
+		if (victimGuild != null)
+		{
+			var (k, d, h, a) = deltas.GetValueOrDefault(victimGuild.Id);
+			deltas[victimGuild.Id] = (k, d + 1, h, a);
+		}
+
+		if (attackerGuild != null)
+		{
+			var (k, d, h, a) = deltas.GetValueOrDefault(attackerGuild.Id);
+			deltas[attackerGuild.Id] = (k + 1, d, h + (isHeadshot ? 1 : 0), a);
+		}
+
+		if (assisterGuild != null)
+		{
+			var (k, d, h, a) = deltas.GetValueOrDefault(assisterGuild.Id);
+			deltas[assisterGuild.Id] = (k, d, h, a + 1);
+		}
+
+		// One DB upsert per distinct guild (often just 1-2 calls instead of up to 3)
+		var dbTasks = deltas.Select(kvp =>
+			_database.IncrementGuildStatsAsync(kvp.Key, kvp.Value.kills, kvp.Value.deaths, kvp.Value.headshots, kvp.Value.assists));
+
+		await Task.WhenAll(dbTasks);
 	}
 
 	private async Task UpdatePlayerScoreboardTag(IPlayer player)
@@ -162,7 +228,10 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 		if (!Guild.ShowTagOnScoreboard) return;
 
 		var guild = await _guildService.GetPlayerGuildAsync(player.SteamID);
-		var tag = guild?.Tag ?? string.Empty;
+		var localizer = Core.Translation.GetPlayerLocalizer(player);
+		var tag = guild != null
+			? localizer["k4.clan.tag_format.scoreboard", guild.Tag]
+			: string.Empty;
 
 		Core.Scheduler.NextWorldUpdate(() =>
 		{
@@ -181,7 +250,7 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 		{
 			if (player.SteamID == steamId && player.IsValid)
 			{
-				Task.Run(async () => await UpdatePlayerScoreboardTag(player));
+				_ = UpdatePlayerScoreboardTag(player);
 				return;
 			}
 		}
@@ -189,19 +258,21 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 
 	internal void RefreshGuildScoreboardTags(int guildId)
 	{
-		Task.Run(async () =>
-		{
-			var guild = await _guildService.GetGuildAsync(guildId);
-			if (guild == null) return;
+		_ = RefreshGuildScoreboardTagsAsync(guildId);
+	}
 
-			var memberSteamIds = new HashSet<ulong>(guild.Members.Select(m => m.SteamId));
-			var onlinePlayers = Core.PlayerManager.GetAllPlayers()
-				.Where(p => p.IsValid && memberSteamIds.Contains(p.SteamID))
-				.ToList();
+	private async Task RefreshGuildScoreboardTagsAsync(int guildId)
+	{
+		var guild = await _guildService.GetGuildAsync(guildId);
+		if (guild == null) return;
 
-			foreach (var player in onlinePlayers)
-				await UpdatePlayerScoreboardTag(player);
-		});
+		var memberSteamIds = new HashSet<ulong>(guild.Members.Select(m => m.SteamId));
+		var onlinePlayers = Core.PlayerManager.GetAllPlayers()
+			.Where(p => p.IsValid && memberSteamIds.Contains(p.SteamID))
+			.ToList();
+
+		foreach (var player in onlinePlayers)
+			await UpdatePlayerScoreboardTag(player);
 	}
 
 	private void StartInterestTimer()
@@ -221,36 +292,40 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 
 	private void RefreshAllScoreboardTags()
 	{
-		Task.Run(async () =>
+		_ = RefreshAllScoreboardTagsAsync();
+	}
+
+	private async Task RefreshAllScoreboardTagsAsync()
+	{
+		foreach (var player in Core.PlayerManager.GetAllPlayers())
 		{
-			foreach (var player in Core.PlayerManager.GetAllPlayers())
-			{
-				if (player.IsValid)
-					await UpdatePlayerScoreboardTag(player);
-			}
-		});
+			if (player.IsValid)
+				await UpdatePlayerScoreboardTag(player);
+		}
 	}
 
 	private void ProcessBankInterest()
 	{
-		Task.Run(async () =>
+		_ = ProcessBankInterestAsync();
+	}
+
+	private async Task ProcessBankInterestAsync()
+	{
+		var guilds = await _database.GetAllGuildsAsync(0, 1000);
+		foreach (var guild in guilds)
 		{
-			var guilds = await _database.GetAllGuildsAsync(0, 1000);
-			foreach (var guild in guilds)
-			{
-				var interestPercent = _upgradeService.CalculateBankInterestPercent(guild);
-				if (interestPercent <= 0 || guild.BankBalance <= 0) continue;
+			var interestPercent = _upgradeService.CalculateBankInterestPercent(guild);
+			if (interestPercent <= 0 || guild.BankBalance <= 0) continue;
 
-				var interest = (long)(guild.BankBalance * interestPercent / 100);
-				if (interest <= 0) continue;
+			var interest = (long)(guild.BankBalance * interestPercent / 100);
+			if (interest <= 0) continue;
 
-				var maxCapacity = _guildService.CalculateMaxBankCapacity(guild);
-				var newBalance = Math.Min(guild.BankBalance + interest, maxCapacity);
+			var maxCapacity = _guildService.CalculateMaxBankCapacity(guild);
+			var newBalance = Math.Min(guild.BankBalance + interest, maxCapacity);
 
-				await _database.UpdateBankBalanceAsync(guild.Id, newBalance);
-				_guildService.InvalidateGuildCache(guild.Id);
-			}
-		});
+			await _database.UpdateBankBalanceAsync(guild.Id, newBalance);
+			_guildService.InvalidateGuildCache(guild.Id);
+		}
 	}
 
 	private void OnClientDisconnected(IOnClientDisconnectedEvent ev)

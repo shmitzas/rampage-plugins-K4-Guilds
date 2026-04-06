@@ -99,11 +99,7 @@ public sealed class PerkService(Plugin plugin, DatabaseService database)
 		if (perk.PerkType != GuildPerkType.Purchasable)
 			return (false, false);
 
-		var currentLevel = await database.GetPerkLevelAsync(guildId, perkId);
-		if (currentLevel == 0)
-			return (false, false);
-
-		var newState = await database.TogglePerkEnabledAsync(guildId, perkId);
-		return (true, newState);
+		// TogglePerkEnabledAsync returns (false, false) if the perk hasn't been purchased yet
+		return await database.TogglePerkEnabledAsync(guildId, perkId);
 	}
 }

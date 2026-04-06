@@ -1,5 +1,7 @@
+using Dapper;
 using Dommel;
 using K4_Guilds.Database.Models;
+using MySqlConnector;
 
 namespace K4_Guilds.Database;
 
@@ -36,43 +38,36 @@ public partial class DatabaseService
 		using var conn = GetConnection();
 		conn.Open();
 
-		var existing = (await conn.SelectAsync<GuildPerk>(p => p.GuildId == guildId && p.PerkId == perkId)).FirstOrDefault();
+		var now = DateTime.UtcNow;
+		string sql = conn switch
+		{
+			MySqlConnection => """
+				INSERT INTO k4_guild_perks (guild_id, perk_id, level, enabled, purchased_at, updated_at)
+				VALUES (@GuildId, @PerkId, @Level, @Enabled, @Now, @Now)
+				ON DUPLICATE KEY UPDATE level = @Level, enabled = @Enabled, updated_at = @Now
+				""",
+			_ => """
+				INSERT INTO k4_guild_perks (guild_id, perk_id, level, enabled, purchased_at, updated_at)
+				VALUES (@GuildId, @PerkId, @Level, @Enabled, @Now, @Now)
+				ON CONFLICT (guild_id, perk_id) DO UPDATE SET level = @Level, enabled = @Enabled, updated_at = @Now
+				"""
+		};
 
-		if (existing != null)
-		{
-			existing.Level = level;
-			existing.Enabled = enabled;
-			existing.UpdatedAt = DateTime.UtcNow;
-			await conn.UpdateAsync(existing);
-			return level;
-		}
-		else
-		{
-			var perk = new GuildPerk
-			{
-				GuildId = guildId,
-				PerkId = perkId,
-				Level = level,
-				Enabled = enabled,
-				PurchasedAt = DateTime.UtcNow,
-				UpdatedAt = DateTime.UtcNow
-			};
-			await conn.InsertAsync(perk);
-			return level;
-		}
+		await conn.ExecuteAsync(sql, new { GuildId = guildId, PerkId = perkId, Level = level, Enabled = enabled, Now = now });
+		return level;
 	}
 
-	public async Task<bool> TogglePerkEnabledAsync(int guildId, string perkId)
+	public async Task<(bool Success, bool NewState)> TogglePerkEnabledAsync(int guildId, string perkId)
 	{
 		using var conn = GetConnection();
 		conn.Open();
 
 		var existing = (await conn.SelectAsync<GuildPerk>(p => p.GuildId == guildId && p.PerkId == perkId)).FirstOrDefault();
-		if (existing == null || existing.Level == 0) return false;
+		if (existing == null || existing.Level == 0) return (false, false);
 
 		existing.Enabled = !existing.Enabled;
 		existing.UpdatedAt = DateTime.UtcNow;
 		await conn.UpdateAsync(existing);
-		return existing.Enabled;
+		return (true, existing.Enabled);
 	}
 }

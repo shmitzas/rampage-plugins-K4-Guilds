@@ -21,6 +21,7 @@ public sealed class CommandsConfig
 	public SubCommandSettings Chat { get; set; } = new() { Name = "chat", Aliases = ["gc", "c"] };
 	public SubCommandSettings Perks { get; set; } = new() { Name = "perks", Aliases = ["perk", "p"] };
 	public RenameCommandSettings Rename { get; set; } = new() { Name = "rename", Aliases = ["rn"] };
+	public SubCommandSettings Top { get; set; } = new() { Name = "top", Aliases = ["leaderboard", "lb"] };
 	public SubCommandSettings Help { get; set; } = new() { Name = "help", Aliases = ["h", "?"] };
 
 	private Dictionary<string, SubCommandSettings>? _commandMap;
@@ -34,7 +35,7 @@ public sealed class CommandsConfig
 	private Dictionary<string, SubCommandSettings> BuildCommandMap()
 	{
 		var map = new Dictionary<string, SubCommandSettings>(StringComparer.OrdinalIgnoreCase);
-		var allCommands = new SubCommandSettings[] { Create, Disband, Invite, Accept, Decline, Leave, Kick, Promote, Demote, Info, Members, Deposit, Withdraw, Upgrade, Chat, Perks, Rename, Help };
+		var allCommands = new SubCommandSettings[] { Create, Disband, Invite, Accept, Decline, Leave, Kick, Promote, Demote, Info, Members, Deposit, Withdraw, Upgrade, Chat, Perks, Rename, Top, Help };
 
 		foreach (var cmd in allCommands)
 		{

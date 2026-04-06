@@ -46,6 +46,7 @@
   "k4.command.help.upgrade": "[grey]> [olive]!guild upgrade [type][silver] - View/purchase upgrades",
   "k4.command.help.chat": "[grey]> [olive]!gc <message>[silver] - Guild chat",
   "k4.command.help.perks": "[grey]> [olive]!guild perks[silver] - View and manage perks",
+  "k4.command.help.top": "[grey]> [olive]!guild top [count][silver] - Top guilds by kills",
   "k4.command.help.footer": "[lime]===",
 
   // Info command (multi-line)
@@ -164,5 +165,14 @@
   // Chat/Invite notifications
   "k4.chat.format": "[grey][[lime]{0}[grey]] [silver]{1}[grey]: [white]{2}",
   "k4.chat.invite_received": "[silver]You have been invited to join a guild by [lime]{0}[silver]!",
-  "k4.chat.invite_usage": "[silver]Type [lime]!guild accept[silver] to join or [lime]!guild decline[silver] to reject."
+  "k4.chat.invite_usage": "[silver]Type [lime]!guild accept[silver] to join or [lime]!guild decline[silver] to reject.",
+
+  // Top guilds
+  "k4.command.top.header": "[lime]=== Top Guilds by Kills",
+  "k4.command.top.item": "[grey]> [gold]#{0} [silver]{1} [grey][{2}][silver] - K: [lime]{3} [silver]D: [lime]{4} [silver]HS: [lime]{5} [silver]A: [lime]{6}",
+  "k4.command.top.no_stats": "[silver]No guild stats have been recorded yet.",
+  "k4.command.top.footer": "[lime]===",
+
+  // Clan name tag display
+  "k4.clan.tag_format.scoreboard": "[{0}]"
 }

@@ -20,12 +20,10 @@ public partial class DatabaseService
 		using var conn = GetConnection();
 		conn.Open();
 
-		var guild = await conn.GetAsync<Guild>(guildId);
-		if (guild == null) return false;
-
-		guild.BankBalance = newBalance;
-		guild.UpdatedAt = DateTime.UtcNow;
-		return await conn.UpdateAsync(guild);
+		var affected = await conn.ExecuteAsync(
+			"UPDATE k4_guilds SET bank_balance = @Balance, updated_at = @Now WHERE id = @Id",
+			new { Balance = newBalance, Now = DateTime.UtcNow, Id = guildId });
+		return affected > 0;
 	}
 
 	/// <summary>Atomically add to bank balance with overflow protection</summary>
