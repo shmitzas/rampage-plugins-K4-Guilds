@@ -1,0 +1,178 @@
+{
+  // Bendra
+  "k4.general.prefix": "[ [darkred]Rampage.lt [default]]",
+
+  // Rangų pavadinimai
+  "k4.rank.leader": "Lyderis",
+  "k4.rank.officer": "Karininkas",
+  "k4.rank.member": "Narys",
+
+  // Komandų klaidos
+  "k4.command.error.no_permission": "[red]Neturi teisės naudot šią komandą.",
+  "k4.command.error.player_not_found": "[red]Žaidėjas nerastas.",
+  "k4.command.error.multiple_matches": "[red]Rasta keli žaidėjai. Būk konkretesnis.",
+  "k4.command.error.member_not_found": "[red]Narys nerastas klane.",
+  "k4.command.error.invalid_upgrade": "[red]Neteisingas upgrade tipas. Naudok: slots, bank, xp, interest",
+
+  // Komandų naudojimas
+  "k4.command.usage.create": "Naudojimas: [gold]!clan create [grey]<pavadinimas> [grey]<tagas>",
+  "k4.command.usage.invite": "Naudojimas: [gold]!clan invite [grey]<žaidėjas>",
+  "k4.command.usage.kick": "Naudojimas: [gold]!clan kick [grey]<žaidėjas>",
+  "k4.command.usage.promote": "Naudojimas: [gold]!clan promote [grey]<žaidėjas>",
+  "k4.command.usage.demote": "Naudojimas: [gold]!clan demote [grey]<žaidėjas>",
+  "k4.command.usage.deposit": "Naudojimas: [gold]!clan deposit [grey]<kiekis>",
+  "k4.command.usage.withdraw": "Naudojimas: [gold]!clan withdraw [grey]<kiekis>",
+  "k4.command.usage.upgrade": "Naudojimas: [gold]!clan upgrade [grey]<slots|bank|xp|interest>",
+  "k4.command.usage.rename": "Naudojimas: [gold]!clan rename [grey]<naujas pavadinimas>",
+  "k4.command.usage.gc": "Naudojimas: [gold]!cc [grey]<žinutė>",
+  "k4.command.usage.perk_buy": "Naudojimas: [gold]!clan perks buy [grey]<perk_id>",
+  "k4.command.usage.perk_toggle": "Naudojimas: [gold]!clan perks toggle [grey]<perk_id>",
+  "k4.command.usage.perk_info": "Naudojimas: [gold]!clan perks info [grey]<perk_id>",
+
+  // Help komanda
+  "k4.command.help.header": "[gold]▬▬▬▬▬▬ [default]Klano komandos [gold]▬▬▬▬▬▬",
+  "k4.command.help.create": "[grey]» [gold]!clan create [grey]<pavadinimas> [grey]<tagas> [default]- Sukurt naują klaną",
+  "k4.command.help.info": "[grey]» [gold]!clan info [default]- Peržiūrėt klano info",
+  "k4.command.help.members": "[grey]» [gold]!clan members [default]- Klano narių sąrašas",
+  "k4.command.help.invite": "[grey]» [gold]!clan invite [grey]<žaidėjas> [default]- Pakviesti žaidėją",
+  "k4.command.help.accept": "[grey]» [gold]!clan accept [default]- Priimti kvietimą",
+  "k4.command.help.decline": "[grey]» [gold]!clan decline [default]- Atmesti kvietimą",
+  "k4.command.help.leave": "[grey]» [gold]!clan leave [default]- Išeiti iš klano",
+  "k4.command.help.kick": "[grey]» [gold]!clan kick [grey]<žaidėjas> [default]- Išmesti narį",
+  "k4.command.help.promote": "[grey]» [gold]!clan promote [grey]<žaidėjas> [default]- Paaukštint narį",
+  "k4.command.help.demote": "[grey]» [gold]!clan demote [grey]<žaidėjas> [default]- Pažemint narį",
+  "k4.command.help.deposit": "[grey]» [gold]!clan deposit [grey]<kiekis> [default]- Įnešt į klano banką",
+  "k4.command.help.withdraw": "[grey]» [gold]!clan withdraw [grey]<kiekis> [default]- Išsimt iš banko",
+  "k4.command.help.upgrade": "[grey]» [gold]!clan upgrade <tipas> [default]- Peržiūrėt/pirkt upgrade'us",
+  "k4.command.help.chat": "[grey]» [gold]!cc [grey]<žinutė> [default]- Klano čatas",
+  "k4.command.help.perks": "[grey]» [gold]!clan perks [default]- Peržiūrėt ir valdyt perkus",
+  "k4.command.help.top": "[grey]» [gold]!clan top [grey][kiekis] [default]- Top klanai pagal nužudymus",
+  "k4.command.help.footer": "[gold]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
+
+  // Info komanda
+  "k4.command.info.header": "[gold]▬▬▬▬▬▬ [default]{0} [{1}] [gold]▬▬▬▬▬▬",
+  "k4.command.info.members": "[grey]» [grey]Nariai: [lime]{0}[grey]/[lime]{1}",
+  "k4.command.info.bank": "[grey]» [grey]Bankas: [lime]{0}[grey]/[lime]{1}",
+  "k4.command.info.xpboost": "[grey]» [grey]XP Boost: [lime]+{0}%",
+  "k4.command.info.footer": "[gold]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
+
+  // Narių komanda
+  "k4.command.members.header": "[gold]▬▬▬▬▬▬ [default]Klano nariai [gold]▬▬▬▬▬▬",
+  "k4.command.members.item": "[grey]» [grey]{0} [grey]({1})",
+  "k4.command.members.footer": "[gold]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
+
+  // Klano klaidos
+  "k4.guild.error.not_in_guild": "[red]Tu nesi klane.",
+  "k4.guild.error.already_in_guild": "[red]Tu jau esi klane.",
+  "k4.guild.error.name_empty": "[red]Klano pavadinimas negali būt tuščias.",
+  "k4.guild.error.name_whitespace": "[red]Klano pavadinimas negali turėt tarpų pradžioj/pabaigoj.",
+  "k4.guild.error.name_invalid_chars": "[red]Klano pavadinime yra netinkamų simbolių.",
+  "k4.guild.error.name_too_short": "[red]Klano pavadinimas turi būt bent {0} simbolių.",
+  "k4.guild.error.name_too_long": "[red]Klano pavadinimas negali viršyt {0} simbolių.",
+  "k4.guild.error.tag_empty": "[red]Klano tagas negali būt tuščias.",
+  "k4.guild.error.tag_invalid_chars": "[red]Klano tage yra netinkamų simbolių.",
+  "k4.guild.error.tag_too_long": "[red]Klano tagas negali viršyt {0} simbolių.",
+  "k4.guild.error.name_taken": "[red]Klanas su tokiu vardu jau egzistuoja.",
+  "k4.guild.error.not_enough_currency": "[red]Nepakanka lėšų! Reikia [gold]{0}[red], turi [gold]{1}[red].",
+  "k4.guild.error.not_leader": "[red]Tik klano lyderis gali tai daryt.",
+  "k4.guild.error.leader_cannot_leave": "[red]Lyderis negali išeit. Perduok vadovavimą arba išformuok klaną.",
+  "k4.guild.error.no_permission_invite": "[red]Neturi teisės kviesti žaidėjų.",
+  "k4.guild.error.no_permission_kick": "[red]Neturi teisės šalint narių.",
+  "k4.guild.error.no_permission_promote": "[red]Neturi teisės paaukštint narių.",
+  "k4.guild.error.no_permission_demote": "[red]Neturi teisės pažemint narių.",
+  "k4.guild.error.no_permission_withdraw": "[red]Neturi teisės išsimt pinigų.",
+  "k4.guild.error.no_permission_upgrade": "[red]Neturi teisės pirkt upgrade'ų.",
+  "k4.guild.error.no_permission_chat": "[red]Neturi teisės naudot klano čato.",
+  "k4.guild.error.no_permission": "[red]Neturi teisės tai daryt.",
+  "k4.guild.error.target_in_guild": "[red]Tas žaidėjas jau yra klane.",
+  "k4.guild.error.target_has_invite": "[red]Tas žaidėjas jau turi laukiantį kvietimą.",
+  "k4.guild.error.target_not_in_guild": "[red]Tas žaidėjas nėra tavo klane.",
+  "k4.guild.error.target_higher_rank": "[red]Negali valdyt žmogaus su tokiu pat ar aukštesniu rangu.",
+  "k4.guild.error.target_guild_full": "[red]Klanas pilnas.",
+  "k4.guild.error.guild_full": "[red]Tavo klanas pilnas.",
+  "k4.guild.error.no_pending_invite": "[red]Neturi laukiančio kvietimo.",
+  "k4.guild.error.guild_not_exists": "[red]Klanas nebegzistuoja.",
+  "k4.guild.error.no_default_rank": "[red]Klanas neturi nustatyto default rango.",
+  "k4.guild.error.invalid_rank": "[red]Neteisingas rangas.",
+  "k4.guild.error.no_higher_rank": "[red]Nėra aukštesnio rango.",
+  "k4.guild.error.no_lower_rank": "[red]Nėra žemesnio rango.",
+  "k4.guild.error.cannot_kick_leader": "[red]Negali išmest klano lyderio.",
+  "k4.guild.error.service_unavailable": "[red]Servisas laikinai nepasiekiamas.",
+  "k4.guild.error.no_perks": "[red]Nėra prieinamų perkų.",
+  "k4.guild.error.perk_not_found": "[red]Perkas '{0}' nerastas.",
+  "k4.guild.error.perk_not_toggleable": "[red]Šio perko negalima perjungt.",
+  "k4.guild.error.perk_not_purchased": "[red]Šis perkas dar nenupirktas.",
+  "k4.guild.error.perk_already_purchased": "[red]Šis perkas jau nupirktas.",
+  "k4.guild.error.perk_max_level": "[red]Šis perkas jau maksimaliam lygy.",
+  "k4.guild.error.perk_toggle_failed": "[red]Nepavyko perjungt perko.",
+
+  // Klano sėkmės
+  "k4.guild.success.created": "[lime]Klanas '[gold]{0}[lime]' sėkmingai sukurtas!",
+  "k4.guild.success.disbanded": "[lime]Klanas buvo išformuotas.",
+  "k4.guild.success.renamed": "[lime]Klanas pervadintas iš '[gold]{0}[lime]' į '[gold]{1}[lime]'.",
+  "k4.guild.success.invite_sent": "[lime]Kvietimas išsiųstas [gold]{0}[lime].",
+  "k4.guild.success.joined": "[lime]Prisijungei prie '[gold]{0}[lime]'!",
+  "k4.guild.success.invite_declined": "Kvietimas atmestas.",
+  "k4.guild.success.left": "Išėjai iš '[gold]{0}[grey]'.",
+  "k4.guild.success.kicked": "[lime]{0} buvo išmestas iš klano.",
+  "k4.guild.success.promoted": "[lime]{0} paaukštintas į [gold]{1}[lime].",
+  "k4.guild.success.demoted": "{0} pažemintas į [gold]{1}[grey].",
+  "k4.guild.success.perk_purchased": "[lime]Perkas '[gold]{0}[lime]' nupirktas! Lygis: [gold]{1}",
+  "k4.guild.success.perk_upgraded": "[lime]Perkas '[gold]{0}[lime]' patobulintas iki lygio [gold]{1}[gold]!",
+  "k4.guild.success.perk_enabled": "[lime]Perkas '[gold]{0}[lime]' įjungtas.",
+  "k4.guild.success.perk_disabled": "Perkas '[gold]{0}[red]' išjungtas.",
+
+  // Upgrade komanda
+  "k4.command.upgrades.header": "[gold]▬▬▬▬▬▬ [default]Klano upgrade'ai [gold]▬▬▬▬▬▬",
+  "k4.command.upgrades.item": "[grey]» [grey]{0} [grey]({1}) [default]- Lv.[lime]{2}[grey]/[lime]{3} [grey]- Kitas: [gold]{4}",
+  "k4.command.upgrades.item_maxed": "[grey]» [gold]{0} [grey]({1}) [default]- Lv.[lime]{2} [yellow]MAX",
+  "k4.command.upgrades.usage_hint": "[grey]» [gold]!clan upgrade [grey]<slots|bank|xp|interest>",
+  "k4.command.upgrades.footer": "[gold]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
+
+  // Upgrade klaidos/sėkmės
+  "k4.upgrade.error.disabled": "[red]Šis upgrade išjungtas.",
+  "k4.upgrade.error.max_level": "[red]Šis upgrade jau maksimaliam lygy.",
+  "k4.upgrade.error.insufficient_funds": "[red]Nepakanka klano banko lėšų! Reikia [gold]{0}[red], yra [gold]{1}[red].",
+  "k4.upgrade.success.purchased": "[lime]{0} patobulintas iki lygio [gold]{1}[gold]!",
+
+  // Banko klaidos/sėkmės
+  "k4.bank.error.invalid_amount": "[red]Suma turi būt didesnė nei 0.",
+  "k4.bank.error.insufficient_balance": "[red]Nepakanka balanso! Turi [gold]{0}[red].",
+  "k4.bank.error.insufficient_bank": "[red]Nepakanka klano banko lėšų! Banke yra [gold]{0}[red].",
+  "k4.bank.error.exceed_capacity": "[red]Viršytų banko talpą ([gold]{0}[red]). Dabartinis balansas: [gold]{1}[red].",
+  "k4.bank.success.deposited": "[lime]Įnešta [gold]{0}[lime] į klano banką.",
+  "k4.bank.success.withdrawn": "[lime]Išimta [gold]{0}[lime] iš klano banko.",
+
+  // Ekonomika
+  "k4.economy.error.unavailable": "[red]Ekonomikos sistema nepasiekiama.",
+
+  // Perkai
+  "k4.guild.perks.header": "[gold]▬▬▬▬▬▬ [default]Klano perkai [gold]▬▬▬▬▬▬",
+  "k4.guild.perks.item_not_purchased": "[grey]» [grey]{0}[grey] {1} ({2}) - Kaina: [gold]{3}",
+  "k4.guild.perks.item_purchasable": "[grey]» [lime]{0}[grey] {1} ({2}) - {3}",
+  "k4.guild.perks.item_upgradeable": "[grey]» [lime]{0}[grey] {1} ({2}) - Lv.{3}/{4} - Kitas: [gold]{5}",
+  "k4.guild.perks.item_maxed": "[grey]» [gold]{0}[grey] {1} ({2}) - Lv.{3} [yellow]MAX",
+  "k4.guild.perks.status_on": "[lime]ĮJ",
+  "k4.guild.perks.status_off": "[red]IŠJ",
+  "k4.guild.perks.usage_hint": "[grey]» [grey]Naudok !clan perks buy/toggle/info [grey]<perk_id>",
+  "k4.guild.perks.info.header": "[gold]▬▬▬▬▬▬ {0} [grey]({1}) [gold]▬▬▬▬▬▬",
+  "k4.guild.perks.info.description": "[grey]» [grey]{0}",
+  "k4.guild.perks.info.status": "[grey]» [grey]Statusas: {0}",
+  "k4.guild.perks.info.cost": "[grey]» [grey]Kaina: [gold]{0}",
+  "k4.guild.perks.info.level": "[grey]» [grey]Lygis: [lime]{0}[grey]/[lime]{1}",
+  "k4.guild.perks.info.next_cost": "[grey]» [grey]Kitas upgrade: [gold]{0}",
+
+  // Čato/Kvietimo pranešimai
+  "k4.chat.format": "[grey][[lime]{0}[grey]] [grey]{1}[grey]: [white]{2}",
+  "k4.chat.invite_received": "Gavai kvietimą prisijungt prie klano nuo [lime]{0}[grey]!",
+  "k4.chat.invite_usage": "Rašyk [gold]!clan accept[grey] kad prisijungtum arba [gold]!clan decline[grey] kad atmestum.",
+
+  // Top klanai
+  "k4.command.top.header": "[gold]▬▬▬▬▬▬ [default]Top klanai pagal nužudymus [gold]▬▬▬▬▬▬",
+  "k4.command.top.item": "[grey]» [gold]#{0} [default]{1} [grey][{2}][default] - K: [lime]{3} [default]D: [lime]{4} [default]HS: [lime]{5} [default]A: [lime]{6}",
+  "k4.command.top.no_stats": "Dar nėra jokios klano statistikos.",
+  "k4.command.top.footer": "[gold]▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
+
+  // Klano tagas
+  "k4.clan.tag_format.scoreboard": "[{0}]"
+}
