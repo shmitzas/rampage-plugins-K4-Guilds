@@ -229,9 +229,12 @@ public sealed partial class Plugin(ISwiftlyCore core) : BasePlugin(core)
 
 		var guild = await _guildService.GetPlayerGuildAsync(player.SteamID);
 		var localizer = Core.Translation.GetPlayerLocalizer(player);
-		var tag = guild != null
-			? localizer["k4.clan.tag_format.scoreboard", guild.Tag]
-			: string.Empty;
+		string tag = string.Empty;
+		if (guild != null)
+		{
+			try { tag = localizer["k4.clan.tag_format.scoreboard", guild.Tag]; }
+			catch { tag = $"[{guild.Tag}]"; }
+		}
 
 		Core.Scheduler.NextWorldUpdate(() =>
 		{
